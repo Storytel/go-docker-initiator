@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
+	"time"
 )
 
 type PubSubInstance struct {
@@ -23,6 +24,10 @@ func PubSub() (*PubSubInstance, error) {
 
 	project := "__docker_initiator__project-" + strconv.Itoa(rand.Int())[:8]
 	psi := &PubSubInstance{i, project}
+
+	if err = psi.Probe(10 * time.Second); err != nil {
+		return nil, err
+	}
 
 	return psi, nil
 }
