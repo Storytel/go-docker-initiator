@@ -138,6 +138,13 @@ func (i *Instance) Probe(timeout time.Duration) error {
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 
 	doProbe := func() error {
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return err
+		}
+
+		reqctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
+		req.WithContext(reqctx)
 		result, err := http.Get(url)
 		if err != nil {
 			return err
