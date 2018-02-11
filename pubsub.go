@@ -14,8 +14,8 @@ type PubSubInstance struct {
 
 func PubSub() (*PubSubInstance, error) {
 	i, err := createContainer(
-		"google/cloud-sdk:latest",
-		[]string{"gcloud", "beta", "emulators", "pubsub", "start", "--host-port=0.0.0.0:8262"},
+		"storytel/google-cloud-pubsub-emulator",
+		[]string{"--host=0.0.0.0", "-port=8262"},
 		"8262",
 	)
 	if err != nil {

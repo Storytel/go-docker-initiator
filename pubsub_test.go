@@ -10,7 +10,10 @@ import (
 
 func TestPubSub(t *testing.T) {
 	instance, err := PubSub()
-	assert.NoError(t, err)
+	if !assert.NoError(t, err) {
+		return
+	}
+
 	defer func() { instance.Stop() }()
 
 	response, err := http.Get(fmt.Sprintf("http://%s/v1/projects/%s/topics", instance.GetHost(), instance.GetProject()))

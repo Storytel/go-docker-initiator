@@ -10,6 +10,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
+	OBSOLETE_AFTER = -9999 // So they're determined obsolete
 	if err := ClearObsolete(); err != nil {
 		log.Panic(err)
 	}
@@ -74,7 +75,6 @@ func TestClearObsolete(t *testing.T) {
 	assert.NoError(t, err)
 	defer func() { instance.Stop() }()
 
-	OBSOLETE_AFTER = -9999 // So they're determined obsolete
 	err = ClearObsolete()
 	assert.NoError(t, err)
 
