@@ -88,7 +88,7 @@ func getHostPort(container *docker.Container, containerport string) uint16 {
 
 	port, err := strconv.ParseUint(val[0].HostPort, 10, 32)
 	if err != nil {
-		log.Panic("Failed to parse the hostport (%s) to uint16", val[0].HostPort)
+		log.Panicf("Failed to parse the hostport (%s) to uint16", val[0].HostPort)
 	}
 
 	return uint16(port)
