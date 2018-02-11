@@ -143,9 +143,11 @@ func (i *Instance) Probe(timeout time.Duration) error {
 			return err
 		}
 
+		client := &http.Client{}
+
 		reqctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
 		req.WithContext(reqctx)
-		result, err := http.Get(url)
+		result, err := client.Do(req)
 		if err != nil {
 			return err
 		}
