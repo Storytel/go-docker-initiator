@@ -1,0 +1,14 @@
+language: go
+
+services:
+  - docker
+
+go:
+  - 1.9.x
+  - tip
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+notifications:
+  email: false

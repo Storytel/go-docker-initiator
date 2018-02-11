@@ -21,7 +21,7 @@ func PubSub() (*PubSubInstance, error) {
 		return nil, err
 	}
 
-	project := "__storytel_initiator__project-" + strconv.Itoa(rand.Int())
+	project := "__docker_initiator__project-" + strconv.Itoa(rand.Int())[:8]
 	psi := &PubSubInstance{i, project}
 
 	return psi, nil
