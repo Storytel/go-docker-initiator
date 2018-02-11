@@ -138,6 +138,7 @@ func (i *Instance) Probe(timeout time.Duration) error {
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 
 	doProbe := func() error {
+		log.Printf("probing")
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			return err
@@ -147,16 +148,20 @@ func (i *Instance) Probe(timeout time.Duration) error {
 
 		reqctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
 		req.WithContext(reqctx)
+		log.Printf("doing request")
 		result, err := client.Do(req)
 		if err != nil {
+			log.Printf("errored: %s", err.Error())
 			return err
 		}
 
+		log.Printf("status code: %s", result.Status)
 		if result.StatusCode >= 200 && result.StatusCode < 300 {
 			return nil
 		}
 
-		return errors.New("Invalid statuscode: " + strconv.Itoa(result.StatusCode))
+		log.Printf("Bad statuscode!")
+		return errors.New("Invalid status: " + result.Status)
 	}
 
 	if err := doProbe(); err == nil {
@@ -167,9 +172,11 @@ func (i *Instance) Probe(timeout time.Duration) error {
 		select {
 		case <-time.After(1 * time.Second):
 			if err := doProbe(); err == nil {
+				log.Printf("Do probe succeeded!")
 				return nil
 			}
 		case <-ctx.Done():
+			log.Printf("context done")
 			return ctx.Err()
 		}
 	}
