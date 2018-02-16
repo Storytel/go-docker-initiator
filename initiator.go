@@ -1,8 +1,11 @@
 package dockerinitiator
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -16,8 +19,8 @@ type Instance struct {
 	host      string
 }
 
-const OBSOLETE_AFTER = 10 * 60 // in seconds
-const CREATOR = "go-docker-initiator"
+var OBSOLETE_AFTER float64 = 10 * 60 // in seconds
+var CREATOR = "go-docker-initiator"
 
 func createContainer(image string, cmd []string, containerport string) (*Instance, error) {
 	client, err := docker.NewClientFromEnv()
@@ -85,7 +88,7 @@ func getHostPort(container *docker.Container, containerport string) uint16 {
 
 	port, err := strconv.ParseUint(val[0].HostPort, 10, 32)
 	if err != nil {
-		log.Panic("Failed to parse the hostport (%s) to uint16", val[0].HostPort)
+		log.Panicf("Failed to parse the hostport (%s) to uint16", val[0].HostPort)
 	}
 
 	return uint16(port)
@@ -97,20 +100,24 @@ func ClearObsolete() error {
 		return err
 	}
 
-	containers, err := client.ListContainers(docker.ListContainersOptions{
+	apicontainers, err := client.ListContainers(docker.ListContainersOptions{
+		Filters: map[string][]string{
+			"label": []string{"creator=" + CREATOR},
+		},
 		All: true,
 	})
 	if err != nil {
 		return err
 	}
 
-	for _, container := range containers {
-		if val, ok := container.Labels["creator"]; !ok || val != CREATOR {
-			continue
+	for _, apicontainer := range apicontainers {
+		container, err := client.InspectContainer(apicontainer.ID)
+		if err != nil {
+			return err
 		}
-		created := time.Unix(container.Created, 0)
-		if time.Since(created).Seconds() > OBSOLETE_AFTER {
-			log.Printf("Removing obsolete container %v", container.Names)
+		startedAt := container.State.StartedAt
+		if time.Since(startedAt).Seconds() > OBSOLETE_AFTER {
+			log.Printf("Removing obsolete container %s", container.Name)
 			err = client.RemoveContainer(docker.RemoveContainerOptions{
 				ID:    container.ID,
 				Force: true,
@@ -124,4 +131,46 @@ func ClearObsolete() error {
 	}
 
 	return nil
+}
+
+func (i *Instance) Probe(timeout time.Duration) error {
+	url := fmt.Sprintf("http://%s/", i.GetHost())
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	doProbe := func() error {
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return err
+		}
+
+		client := &http.Client{}
+
+		reqctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
+		req.WithContext(reqctx)
+		result, err := client.Do(req)
+		if err != nil {
+			return err
+		}
+
+		if result.StatusCode >= 200 && result.StatusCode < 300 {
+			return nil
+		}
+
+		return errors.New("Invalid status: " + result.Status)
+	}
+
+	if err := doProbe(); err == nil {
+		return nil
+	}
+
+	for {
+		select {
+		case <-time.After(1 * time.Second):
+			if err := doProbe(); err == nil {
+				return nil
+			}
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
 }

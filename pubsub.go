@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
+	"time"
 )
 
 type PubSubInstance struct {
@@ -13,16 +14,20 @@ type PubSubInstance struct {
 
 func PubSub() (*PubSubInstance, error) {
 	i, err := createContainer(
-		"google/cloud-sdk:latest",
-		[]string{"gcloud", "beta", "emulators", "pubsub", "start", "--host-port=0.0.0.0:8262"},
+		"storytel/google-cloud-pubsub-emulator",
+		[]string{"--host=0.0.0.0", "-port=8262"},
 		"8262",
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	project := "__storytel_initiator__project-" + strconv.Itoa(rand.Int())
+	project := "__docker_initiator__project-" + strconv.Itoa(rand.Int())[:8]
 	psi := &PubSubInstance{i, project}
+
+	if err = psi.Probe(10 * time.Second); err != nil {
+		return nil, err
+	}
 
 	return psi, nil
 }
