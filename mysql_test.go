@@ -3,15 +3,15 @@
 package dockerinitiator
 
 import (
-	"fmt"
-	"net/http"
+	"net"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPubSub(t *testing.T) {
-	instance, err := PubSub()
+func TestMysql(t *testing.T) {
+	instance, err := Mysql("test-db")
 	if !assert.NoError(t, err) {
 		return
 	}
@@ -20,10 +20,8 @@ func TestPubSub(t *testing.T) {
 		assert.NoError(t, instance.Stop())
 	}()
 
-	response, err := http.Get(fmt.Sprintf("http://%s/v1/projects/%s/topics", instance.GetHost(), instance.GetProject()))
+	_, err = net.DialTimeout("tcp", instance.GetHost(), 1*time.Second)
 	if !assert.NoError(t, err) {
 		return
 	}
-
-	assert.Equal(t, 200, response.StatusCode)
 }

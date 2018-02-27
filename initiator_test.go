@@ -1,3 +1,5 @@
+// +build integration
+
 package dockerinitiator
 
 import (
@@ -10,7 +12,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	OBSOLETE_AFTER = -9999 // So they're determined obsolete
+	obsoleteAfter = -9999 // So they're determined obsolete
 	if err := ClearObsolete(); err != nil {
 		log.Panic(err)
 	}
@@ -35,7 +37,13 @@ func assertNumContainersFilter(t *testing.T, num int, filters map[string][]strin
 }
 
 func TestCreateContainer(t *testing.T) {
-	instance, err := createContainer("ubuntu:latest", []string{"sleep", "300"}, "8080")
+	instance, err := createContainer(
+		ContainerConfig{
+			Image:         "ubuntu:latest",
+			Cmd:           []string{"sleep", "300"},
+			ContainerPort: "8080",
+		},
+		HTTPProbe{})
 	assert.NoError(t, err)
 	defer func() {
 		assert.NoError(t, instance.Stop())
@@ -45,13 +53,25 @@ func TestCreateContainer(t *testing.T) {
 }
 
 func TestTwoInstanceCoexist(t *testing.T) {
-	instance1, err := createContainer("ubuntu:latest", []string{"sleep", "300"}, "8080")
+	instance1, err := createContainer(
+		ContainerConfig{
+			Image:         "ubuntu:latest",
+			Cmd:           []string{"sleep", "300"},
+			ContainerPort: "8080",
+		},
+		HTTPProbe{})
 	assert.NoError(t, err)
 	defer func() {
 		assert.NoError(t, instance1.Stop())
 	}()
 
-	instance2, err := createContainer("ubuntu:latest", []string{"sleep", "300"}, "8080")
+	instance2, err := createContainer(
+		ContainerConfig{
+			Image:         "ubuntu:latest",
+			Cmd:           []string{"sleep", "300"},
+			ContainerPort: "8080",
+		},
+		HTTPProbe{})
 	assert.NoError(t, err)
 	defer func() {
 		assert.NoError(t, instance2.Stop())
@@ -61,7 +81,13 @@ func TestTwoInstanceCoexist(t *testing.T) {
 }
 
 func TestGetHost(t *testing.T) {
-	instance, err := createContainer("ubuntu:latest", []string{"sleep", "300"}, "8080")
+	instance, err := createContainer(
+		ContainerConfig{
+			Image:         "ubuntu:latest",
+			Cmd:           []string{"sleep", "300"},
+			ContainerPort: "8080",
+		},
+		HTTPProbe{})
 	assert.NoError(t, err)
 	defer func() {
 		assert.NoError(t, instance.Stop())
@@ -71,7 +97,13 @@ func TestGetHost(t *testing.T) {
 }
 
 func TestClearObsolete(t *testing.T) {
-	instance, err := createContainer("ubuntu:latest", []string{"sleep", "300"}, "8080")
+	instance, err := createContainer(
+		ContainerConfig{
+			Image:         "ubuntu:latest",
+			Cmd:           []string{"sleep", "300"},
+			ContainerPort: "8080",
+		},
+		HTTPProbe{})
 	assert.NoError(t, err)
 	defer func() { instance.Stop() }()
 

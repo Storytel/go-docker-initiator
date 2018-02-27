@@ -1,11 +1,8 @@
 package dockerinitiator
 
 import (
-	"context"
-	"errors"
 	"fmt"
 	"log"
-	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -13,36 +10,41 @@ import (
 	docker "github.com/fsouza/go-dockerclient"
 )
 
-type Instance struct {
-	client    *docker.Client
-	container *docker.Container
-	host      string
+// ContainerConfig holds a subset of all of the configuration options available for the docker instance
+type ContainerConfig struct {
+	Image         string
+	Cmd           []string
+	Env           []string
+	ContainerPort string
+	Tmpfs         map[string]string
 }
 
-var OBSOLETE_AFTER float64 = 10 * 60 // in seconds
-var CREATOR = "go-docker-initiator"
+var obsoleteAfter float64 = 10 * 60 // in seconds
+var creator = "go-docker-initiator"
 
-func createContainer(image string, cmd []string, containerport string) (*Instance, error) {
+func createContainer(config ContainerConfig, prober Probe) (*Instance, error) {
 	client, err := docker.NewClientFromEnv()
 	if err != nil {
 		return nil, err
 	}
 
-	if err = client.PullImage(docker.PullImageOptions{Repository: image}, docker.AuthConfiguration{}); err != nil {
+	if err = client.PullImage(docker.PullImageOptions{Repository: config.Image}, docker.AuthConfiguration{}); err != nil {
 		return nil, err
 	}
 
 	exposedports := map[docker.Port]struct{}{}
-	exposedports[docker.Port(containerport)] = struct{}{}
+	exposedports[docker.Port(config.ContainerPort)] = struct{}{}
 	container, err := client.CreateContainer(docker.CreateContainerOptions{
 		HostConfig: &docker.HostConfig{
 			PublishAllPorts: true,
+			Tmpfs:           config.Tmpfs,
 		},
 		Config: &docker.Config{
-			Labels:       map[string]string{"creator": CREATOR},
-			Cmd:          cmd,
+			Labels:       map[string]string{"creator": creator},
+			Cmd:          config.Cmd,
+			Env:          config.Env,
 			ExposedPorts: exposedports,
-			Image:        image,
+			Image:        config.Image,
 		},
 	})
 	if err != nil {
@@ -58,22 +60,16 @@ func createContainer(image string, cmd []string, containerport string) (*Instanc
 		return nil, err
 	}
 
-	host := fmt.Sprintf("%s:%d", "localhost", getHostPort(container, containerport))
+	host := fmt.Sprintf("%s:%d", "localhost", getHostPort(container, config.ContainerPort))
 
-	instance := &Instance{client, container, host}
+	instance := &Instance{
+		client,
+		container,
+		host,
+		prober,
+	}
 
 	return instance, nil
-}
-
-func (i *Instance) Stop() error {
-	return i.client.RemoveContainer(docker.RemoveContainerOptions{
-		ID:    i.container.ID,
-		Force: true,
-	})
-}
-
-func (i *Instance) GetHost() string {
-	return i.host
 }
 
 func getHostPort(container *docker.Container, containerport string) uint16 {
@@ -94,6 +90,7 @@ func getHostPort(container *docker.Container, containerport string) uint16 {
 	return uint16(port)
 }
 
+// ClearObsolete will delete all obsolete containers, created by this program
 func ClearObsolete() error {
 	client, err := docker.NewClientFromEnv()
 	if err != nil {
@@ -102,7 +99,7 @@ func ClearObsolete() error {
 
 	apicontainers, err := client.ListContainers(docker.ListContainersOptions{
 		Filters: map[string][]string{
-			"label": []string{"creator=" + CREATOR},
+			"label": []string{"creator=" + creator},
 		},
 		All: true,
 	})
@@ -116,7 +113,7 @@ func ClearObsolete() error {
 			return err
 		}
 		startedAt := container.State.StartedAt
-		if time.Since(startedAt).Seconds() > OBSOLETE_AFTER {
+		if time.Since(startedAt).Seconds() > obsoleteAfter {
 			log.Printf("Removing obsolete container %s", container.Name)
 			err = client.RemoveContainer(docker.RemoveContainerOptions{
 				ID:    container.ID,
@@ -131,46 +128,4 @@ func ClearObsolete() error {
 	}
 
 	return nil
-}
-
-func (i *Instance) Probe(timeout time.Duration) error {
-	url := fmt.Sprintf("http://%s/", i.GetHost())
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
-
-	doProbe := func() error {
-		req, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			return err
-		}
-
-		client := &http.Client{}
-
-		reqctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
-		req.WithContext(reqctx)
-		result, err := client.Do(req)
-		if err != nil {
-			return err
-		}
-
-		if result.StatusCode >= 200 && result.StatusCode < 300 {
-			return nil
-		}
-
-		return errors.New("Invalid status: " + result.Status)
-	}
-
-	if err := doProbe(); err == nil {
-		return nil
-	}
-
-	for {
-		select {
-		case <-time.After(1 * time.Second):
-			if err := doProbe(); err == nil {
-				return nil
-			}
-		case <-ctx.Done():
-			return ctx.Err()
-		}
-	}
 }
