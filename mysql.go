@@ -46,27 +46,19 @@ func Mysql(dbName string) (*MysqlInstance, error) {
 
 // Setenv sets the required variables for running against the emulator
 func (mi *MysqlInstance) Setenv(dbName string) error {
-	err := os.Setenv("DB_SERVERNAME", mi.GetHost())
-	if err != nil {
+	if err := os.Setenv("DB_SERVERNAME", mi.GetHost()); err != nil {
 		return err
 	}
 
-	err = os.Setenv("DB_USERNAME", "root")
-	if err != nil {
+	if err := os.Setenv("DB_USERNAME", "root"); err != nil {
 		return err
 	}
 
-	err = os.Setenv("DB_PASSWORD", "")
-	if err != nil {
+	if err := os.Setenv("DB_PASSWORD", ""); err != nil {
 		return err
 	}
 
-	err = os.Setenv("DB_NAME", dbName)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return os.Setenv("DB_NAME", dbName)
 }
 
 // GetProject fetches the project for the mysql instance
