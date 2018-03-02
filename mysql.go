@@ -3,6 +3,7 @@ package dockerinitiator
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"strconv"
 	"time"
 )
@@ -41,6 +42,23 @@ func Mysql(dbName string) (*MysqlInstance, error) {
 	}
 
 	return mi, nil
+}
+
+// Setenv sets the required variables for running against the emulator
+func (mi *MysqlInstance) Setenv(dbName string) error {
+	if err := os.Setenv("DB_SERVERNAME", mi.GetHost()); err != nil {
+		return err
+	}
+
+	if err := os.Setenv("DB_USERNAME", "root"); err != nil {
+		return err
+	}
+
+	if err := os.Setenv("DB_PASSWORD", ""); err != nil {
+		return err
+	}
+
+	return os.Setenv("DB_NAME", dbName)
 }
 
 // GetProject fetches the project for the mysql instance
