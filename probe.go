@@ -78,5 +78,11 @@ func (i MysqlProbe) DoProbe(instance *Instance) error {
 		return err
 	}
 
+	var version string
+	err = db.QueryRow("SELECT VERSION()").Scan(&version)
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+
 	return nil
 }
