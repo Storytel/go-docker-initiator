@@ -17,9 +17,9 @@ type MysqlInstance struct {
 
 // MysqlConfig contains configs for mysql
 type MysqlConfig struct {
-	user     string
-	password string
-	dbName   string
+	User     string
+	Password string
+	DbName   string
 }
 
 // Mysql starts up a mysql instance
@@ -28,7 +28,7 @@ func Mysql(config MysqlConfig) (*MysqlInstance, error) {
 		ContainerConfig{
 			Image:         "storytel/mysql-57-test",
 			Cmd:           []string{},
-			Env:           []string{"MYSQL_ALLOW_EMPTY_PASSWORD=true", fmt.Sprintf("MYSQL_DATABASE=%s", config.dbName)},
+			Env:           []string{"MYSQL_ALLOW_EMPTY_PASSWORD=true", fmt.Sprintf("MYSQL_DATABASE=%s", config.DbName)},
 			ContainerPort: "3306",
 			Tmpfs: map[string]string{
 				"/var/lib/mysql": "rw",
@@ -61,15 +61,15 @@ func (mi *MysqlInstance) Setenv() error {
 		return err
 	}
 
-	if err := os.Setenv("DB_USERNAME", mi.user); err != nil {
+	if err := os.Setenv("DB_USERNAME", mi.User); err != nil {
 		return err
 	}
 
-	if err := os.Setenv("DB_PASSWORD", mi.password); err != nil {
+	if err := os.Setenv("DB_PASSWORD", mi.Password); err != nil {
 		return err
 	}
 
-	return os.Setenv("DB_NAME", mi.dbName)
+	return os.Setenv("DB_NAME", mi.DbName)
 }
 
 // GetProject fetches the project for the mysql instance

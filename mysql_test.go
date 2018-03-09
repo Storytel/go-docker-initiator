@@ -12,9 +12,9 @@ import (
 
 func TestMysql(t *testing.T) {
 	instance, err := Mysql(MysqlConfig{
-		user:     "root",
-		password: "",
-		dbName:   "test-db",
+		User:     "root",
+		Password: "",
+		DbName:   "test-db",
 	})
 	if !assert.NoError(t, err) {
 		return
