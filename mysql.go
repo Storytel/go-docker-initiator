@@ -12,21 +12,31 @@ import (
 type MysqlInstance struct {
 	*Instance
 	project string
+	MysqlConfig
+}
+
+// MysqlConfig contains configs for mysql
+type MysqlConfig struct {
+	user     string
+	password string
+	dbName   string
 }
 
 // Mysql starts up a mysql instance
-func Mysql(dbName string) (*MysqlInstance, error) {
+func Mysql(config MysqlConfig) (*MysqlInstance, error) {
 	i, err := createContainer(
 		ContainerConfig{
 			Image:         "storytel/mysql-57-test",
 			Cmd:           []string{},
-			Env:           []string{"MYSQL_ALLOW_EMPTY_PASSWORD=true", fmt.Sprintf("MYSQL_DATABASE=%s", dbName)},
+			Env:           []string{"MYSQL_ALLOW_EMPTY_PASSWORD=true", fmt.Sprintf("MYSQL_DATABASE=%s", config.dbName)},
 			ContainerPort: "3306",
 			Tmpfs: map[string]string{
 				"/var/lib/mysql": "rw",
 			},
 		},
-		TCPProbe{})
+		MysqlProbe{
+			config,
+		})
 	if err != nil {
 		return nil, err
 	}
@@ -35,6 +45,7 @@ func Mysql(dbName string) (*MysqlInstance, error) {
 	mi := &MysqlInstance{
 		i,
 		project,
+		config,
 	}
 
 	if err = mi.Probe(10 * time.Second); err != nil {
@@ -45,20 +56,20 @@ func Mysql(dbName string) (*MysqlInstance, error) {
 }
 
 // Setenv sets the required variables for running against the emulator
-func (mi *MysqlInstance) Setenv(dbName string) error {
+func (mi *MysqlInstance) Setenv() error {
 	if err := os.Setenv("DB_SERVERNAME", mi.GetHost()); err != nil {
 		return err
 	}
 
-	if err := os.Setenv("DB_USERNAME", "root"); err != nil {
+	if err := os.Setenv("DB_USERNAME", mi.user); err != nil {
 		return err
 	}
 
-	if err := os.Setenv("DB_PASSWORD", ""); err != nil {
+	if err := os.Setenv("DB_PASSWORD", mi.password); err != nil {
 		return err
 	}
 
-	return os.Setenv("DB_NAME", dbName)
+	return os.Setenv("DB_NAME", mi.dbName)
 }
 
 // GetProject fetches the project for the mysql instance

@@ -11,7 +11,11 @@ import (
 )
 
 func TestMysql(t *testing.T) {
-	instance, err := Mysql("test-db")
+	instance, err := Mysql(MysqlConfig{
+		user:     "root",
+		password: "",
+		dbName:   "test-db",
+	})
 	if !assert.NoError(t, err) {
 		return
 	}

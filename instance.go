@@ -33,14 +33,14 @@ func (i *Instance) Probe(timeout time.Duration) error {
 	ctx, cancelFunc := context.WithTimeout(context.Background(), timeout)
 	defer cancelFunc()
 
-	if err := i.probe.DoProbe(i.host); err == nil {
+	if err := i.probe.DoProbe(i); err == nil {
 		return nil
 	}
 
 	for {
 		select {
 		case <-time.After(1 * time.Second):
-			if err := i.probe.DoProbe(i.host); err == nil {
+			if err := i.probe.DoProbe(i); err == nil {
 				return nil
 			}
 		case <-ctx.Done():
