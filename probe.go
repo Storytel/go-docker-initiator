@@ -66,9 +66,7 @@ func (i HTTPProbe) DoProbe(instance *Instance) error {
 
 // MysqlProbe implementes the IProbe interface for mysql instances
 type MysqlProbe struct {
-	user     string
-	password string
-	dbName   string
+	MysqlConfig
 }
 
 // DoProbe will probe by waiting for log messages

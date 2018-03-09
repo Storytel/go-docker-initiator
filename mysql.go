@@ -11,31 +11,31 @@ import (
 // MysqlInstance contains the config for mysql instance
 type MysqlInstance struct {
 	*Instance
-	project  string
+	project string
+	MysqlConfig
+}
+
+// MysqlConfig contains configs for mysql
+type MysqlConfig struct {
 	user     string
 	password string
 	dbName   string
 }
 
 // Mysql starts up a mysql instance
-func Mysql(dbName string) (*MysqlInstance, error) {
-	user := "root"
-	password := ""
-
+func Mysql(config MysqlConfig) (*MysqlInstance, error) {
 	i, err := createContainer(
 		ContainerConfig{
 			Image:         "storytel/mysql-57-test",
 			Cmd:           []string{},
-			Env:           []string{"MYSQL_ALLOW_EMPTY_PASSWORD=true", fmt.Sprintf("MYSQL_DATABASE=%s", dbName)},
+			Env:           []string{"MYSQL_ALLOW_EMPTY_PASSWORD=true", fmt.Sprintf("MYSQL_DATABASE=%s", config.dbName)},
 			ContainerPort: "3306",
 			Tmpfs: map[string]string{
 				"/var/lib/mysql": "rw",
 			},
 		},
 		MysqlProbe{
-			user,
-			password,
-			dbName,
+			config,
 		})
 	if err != nil {
 		return nil, err
@@ -45,9 +45,7 @@ func Mysql(dbName string) (*MysqlInstance, error) {
 	mi := &MysqlInstance{
 		i,
 		project,
-		user,
-		password,
-		dbName,
+		config,
 	}
 
 	if err = mi.Probe(10 * time.Second); err != nil {
