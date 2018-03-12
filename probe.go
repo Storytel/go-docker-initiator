@@ -72,9 +72,15 @@ type MysqlProbe struct {
 // DoProbe will probe by waiting for log messages
 func (i MysqlProbe) DoProbe(instance *Instance) error {
 
-	db, err := sql.Open("mysql", i.user+":"+i.password+"@tcp("+instance.GetHost()+")/"+i.dbName)
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s", i.User, i.Password, instance.GetHost(), i.DbName))
 	defer db.Close()
 	if err != nil {
+		return err
+	}
+
+	var version string
+	err = db.QueryRow("SELECT VERSION()").Scan(&version)
+	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
 
