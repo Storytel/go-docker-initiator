@@ -93,7 +93,7 @@ func TestGetHost(t *testing.T) {
 		assert.NoError(t, instance.Stop())
 	}()
 
-	assert.Regexp(t, regexp.MustCompile("^localhost:\\d+$"), instance.GetHost())
+	assert.Regexp(t, regexp.MustCompile("^127.0.0.1:\\d+$"), instance.GetHost())
 }
 
 func TestClearObsolete(t *testing.T) {
