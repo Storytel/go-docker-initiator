@@ -60,7 +60,7 @@ func createContainer(config ContainerConfig, prober Probe) (*Instance, error) {
 		return nil, err
 	}
 
-	host := fmt.Sprintf("%s:%d", "localhost", getHostPort(container, config.ContainerPort))
+	host := fmt.Sprintf("%s:%d", "127.0.0.1", getHostPort(container, config.ContainerPort))
 
 	instance := &Instance{
 		client,
