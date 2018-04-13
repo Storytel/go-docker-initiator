@@ -1,10 +1,13 @@
 package dockerinitiator
 
 import (
+	"bytes"
 	"fmt"
 	"math/rand"
 	"os"
+	"os/exec"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -70,6 +73,30 @@ func (mi *MysqlInstance) Setenv() error {
 	}
 
 	return os.Setenv("DB_NAME", mi.DbName)
+}
+
+// SeedDatabase loads a seed sql file and executes it against the db.
+func (mi *MysqlInstance) SeedDatabase(seedFilePath string) error {
+	instanceHostAndPort := strings.Split(mi.GetHost(), ":")
+	hostName := instanceHostAndPort[0]
+	if hostName == "localhost" {
+		hostName = "127.0.0.1"
+	}
+	hostPort := instanceHostAndPort[1]
+
+	cmd := exec.Command("mysql", fmt.Sprintf("-h%s", hostName), fmt.Sprintf("-u%s", mi.User), fmt.Sprintf("-P%s", hostPort), mi.DbName, "-e", fmt.Sprintf("source %s", seedFilePath))
+
+	var out, stderr bytes.Buffer
+
+	cmd.Stdout = &bytes.Buffer{}
+	cmd.Stderr = &bytes.Buffer{}
+
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("Error executing query. Command Output: %+v\n: %+v, %v", out.String(), stderr.String(), err)
+	}
+
+	return nil
 }
 
 // GetProject fetches the project for the mysql instance
