@@ -5,11 +5,14 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-sql-driver/mysql"
 )
 
 //Probe provides an interfor for the probing mechanism
@@ -72,13 +75,15 @@ type MysqlProbe struct {
 // DoProbe will probe by waiting for log messages
 func (i MysqlProbe) DoProbe(instance *Instance) error {
 
+	silent := log.New(ioutil.Discard, "", 0)
+	mysql.SetLogger(silent)
+	defer mysql.SetLogger(log.New(os.Stderr, "[mysql] ", log.Ldate|log.Ltime|log.Lshortfile)) // This is the default logger for mysql
+
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s", i.User, i.Password, instance.GetHost(), i.DbName))
 	defer db.Close()
 	if err != nil {
 		return err
 	}
-
-	db.SetMaxIdleConns(0)
 
 	var version string
 	err = db.QueryRow("SELECT VERSION()").Scan(&version)
