@@ -28,6 +28,7 @@ func assertNumContainersFilter(t *testing.T, num int, filters map[string][]strin
 	client, err := docker.NewClientFromEnv()
 	assert.NoError(t, err)
 
+	filters["label"] = append(filters["label"], "creator=go-docker-initiator")
 	containers, err := client.ListContainers(docker.ListContainersOptions{
 		Filters: filters,
 	})
