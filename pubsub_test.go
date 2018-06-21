@@ -11,7 +11,7 @@ import (
 )
 
 func TestPubSub(t *testing.T) {
-	instance, err := PubSub()
+	instance, err := PubSub(PubSubConfig{})
 	if !assert.NoError(t, err) {
 		return
 	}
