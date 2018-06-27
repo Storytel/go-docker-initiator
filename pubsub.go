@@ -11,10 +11,21 @@ import (
 type PubSubInstance struct {
 	*Instance
 	project string
+	PubSubConfig
+}
+
+// PubSubConfig contains configs for pubsub
+type PubSubConfig struct {
+	ProbeTimeout time.Duration
 }
 
 // PubSub will create a PubSub instance container
-func PubSub() (*PubSubInstance, error) {
+func PubSub(config PubSubConfig) (*PubSubInstance, error) {
+
+	if config.ProbeTimeout == 0 {
+		config.ProbeTimeout = 10 * time.Second
+	}
+
 	i, err := createContainer(
 		ContainerConfig{
 			Image:         "storytel/google-cloud-pubsub-emulator",
@@ -30,9 +41,10 @@ func PubSub() (*PubSubInstance, error) {
 	psi := &PubSubInstance{
 		i,
 		project,
+		config,
 	}
 
-	if err = psi.Probe(10 * time.Second); err != nil {
+	if err = psi.Probe(psi.ProbeTimeout); err != nil {
 		return nil, err
 	}
 

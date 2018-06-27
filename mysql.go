@@ -17,13 +17,19 @@ type MysqlInstance struct {
 
 // MysqlConfig contains configs for mysql
 type MysqlConfig struct {
-	User     string
-	Password string
-	DbName   string
+	User         string
+	Password     string
+	DbName       string
+	ProbeTimeout time.Duration
 }
 
 // Mysql starts up a mysql instance
 func Mysql(config MysqlConfig) (*MysqlInstance, error) {
+
+	if config.ProbeTimeout == 0 {
+		config.ProbeTimeout = 10 * time.Second
+	}
+
 	i, err := createContainer(
 		ContainerConfig{
 			Image:         "storytel/mysql-57-test",
@@ -48,7 +54,7 @@ func Mysql(config MysqlConfig) (*MysqlInstance, error) {
 		config,
 	}
 
-	if err = mi.Probe(10 * time.Second); err != nil {
+	if err = mi.Probe(mi.ProbeTimeout); err != nil {
 		return nil, err
 	}
 
