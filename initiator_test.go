@@ -38,7 +38,7 @@ func assertNumContainersFilter(t *testing.T, num int, filters map[string][]strin
 }
 
 func TestCreateContainer(t *testing.T) {
-	instance, err := createContainer(
+	instance, err := CreateContainer(
 		ContainerConfig{
 			Image:         "ubuntu:latest",
 			Cmd:           []string{"sleep", "300"},
@@ -54,7 +54,7 @@ func TestCreateContainer(t *testing.T) {
 }
 
 func TestTwoInstanceCoexist(t *testing.T) {
-	instance1, err := createContainer(
+	instance1, err := CreateContainer(
 		ContainerConfig{
 			Image:         "ubuntu:latest",
 			Cmd:           []string{"sleep", "300"},
@@ -66,7 +66,7 @@ func TestTwoInstanceCoexist(t *testing.T) {
 		assert.NoError(t, instance1.Stop())
 	}()
 
-	instance2, err := createContainer(
+	instance2, err := CreateContainer(
 		ContainerConfig{
 			Image:         "ubuntu:latest",
 			Cmd:           []string{"sleep", "300"},
@@ -82,7 +82,7 @@ func TestTwoInstanceCoexist(t *testing.T) {
 }
 
 func TestGetHost(t *testing.T) {
-	instance, err := createContainer(
+	instance, err := CreateContainer(
 		ContainerConfig{
 			Image:         "ubuntu:latest",
 			Cmd:           []string{"sleep", "300"},
@@ -98,7 +98,7 @@ func TestGetHost(t *testing.T) {
 }
 
 func TestClearObsolete(t *testing.T) {
-	instance, err := createContainer(
+	instance, err := CreateContainer(
 		ContainerConfig{
 			Image:         "ubuntu:latest",
 			Cmd:           []string{"sleep", "300"},

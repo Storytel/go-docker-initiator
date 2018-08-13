@@ -5,11 +5,13 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	dockerinitiator "github.com/Storytel/go-docker-initiator"
 )
 
 // PubSubInstance contains the instance config for a PubSub image
 type PubSubInstance struct {
-	*Instance
+	*dockerinitiator.Instance
 	project string
 	PubSubConfig
 }
@@ -26,13 +28,13 @@ func PubSub(config PubSubConfig) (*PubSubInstance, error) {
 		config.ProbeTimeout = 10 * time.Second
 	}
 
-	i, err := createContainer(
-		ContainerConfig{
+	i, err := dockerinitiator.CreateContainer(
+		dockerinitiator.ContainerConfig{
 			Image:         "storytel/google-cloud-pubsub-emulator",
 			Cmd:           []string{"--host=0.0.0.0", "-port=8262"},
 			ContainerPort: "8262",
 		},
-		HTTPProbe{})
+		dockerinitiator.HTTPProbe{})
 	if err != nil {
 		return nil, err
 	}

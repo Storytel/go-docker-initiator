@@ -22,7 +22,7 @@ type ContainerConfig struct {
 var obsoleteAfter float64 = 10 * 60 // in seconds
 var creator = "go-docker-initiator"
 
-func createContainer(config ContainerConfig, prober Probe) (*Instance, error) {
+func CreateContainer(config ContainerConfig, prober Probe) (*Instance, error) {
 	client, err := docker.NewClientFromEnv()
 	if err != nil {
 		return nil, err
