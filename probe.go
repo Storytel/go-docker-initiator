@@ -80,10 +80,10 @@ func (i MysqlProbe) DoProbe(instance *Instance) error {
 	defer mysql.SetLogger(log.New(os.Stderr, "[mysql] ", log.Ldate|log.Ltime|log.Lshortfile)) // This is the default logger for mysql
 
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s", i.User, i.Password, instance.GetHost(), i.DbName))
-	defer db.Close()
 	if err != nil {
 		return err
 	}
+	defer db.Close()
 
 	var version string
 	err = db.QueryRow("SELECT VERSION()").Scan(&version)
