@@ -1,4 +1,4 @@
-package dockerinitiator
+package mysql
 
 import (
 	"fmt"
@@ -6,11 +6,13 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	dockerinitiator "github.com/Storytel/go-docker-initiator"
 )
 
 // MysqlInstance contains the config for mysql instance
 type MysqlInstance struct {
-	*Instance
+	*dockerinitiator.Instance
 	project string
 	MysqlConfig
 }
@@ -30,8 +32,8 @@ func Mysql(config MysqlConfig) (*MysqlInstance, error) {
 		config.ProbeTimeout = 10 * time.Second
 	}
 
-	i, err := createContainer(
-		ContainerConfig{
+	i, err := dockerinitiator.CreateContainer(
+		dockerinitiator.ContainerConfig{
 			Image:         "storytel/mysql-57-test",
 			Cmd:           []string{},
 			Env:           []string{"MYSQL_ALLOW_EMPTY_PASSWORD=true", fmt.Sprintf("MYSQL_DATABASE=%s", config.DbName)},

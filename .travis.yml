@@ -7,7 +7,7 @@ go:
   - "1.10"
 
 install:
-  - go get -t -tags=integration
+  - go get -t -tags=integration ./...
 
 script:
   - go test -v -race -coverprofile=coverage.txt -covermode=atomic -tags=integration
