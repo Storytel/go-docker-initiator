@@ -17,9 +17,8 @@ type MysqlInstance struct {
 	MysqlConfig
 }
 
-// MysqlConfig contains configs for mysql
+// MysqlConfig contains configs for mysql, User is automatically root
 type MysqlConfig struct {
-	User         string
 	Password     string
 	DbName       string
 	ProbeTimeout time.Duration
@@ -69,7 +68,7 @@ func (mi *MysqlInstance) Setenv() error {
 		return err
 	}
 
-	if err := os.Setenv("MYSQL_USER", mi.User); err != nil {
+	if err := os.Setenv("MYSQL_USER", "root"); err != nil {
 		return err
 	}
 

@@ -12,7 +12,6 @@ import (
 
 func TestMysql(t *testing.T) {
 	instance, err := Mysql(MysqlConfig{
-		User:     "root",
 		Password: "",
 		DbName:   "test-db",
 	})
