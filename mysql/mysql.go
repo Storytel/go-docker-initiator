@@ -19,9 +19,28 @@ type MysqlInstance struct {
 
 // MysqlConfig contains configs for mysql, User is automatically root
 type MysqlConfig struct {
-	Password     string
-	DbName       string
+
+	// Password is the mysql password for the standard user "root"
+	Password string
+
+	// DbName is the name of the database you want to create and connect to
+	DbName string
+
+	// ProbeTimeout specifies the timeout for the probing.
+	// A timeout results in a startup error, if left empty a default value is used
 	ProbeTimeout time.Duration
+
+	// Image specifies the image used for the Mysql docker instance.
+	// If left empty the default image will be used
+	Image string
+
+	// Cmd is the commands that will run in the container
+	// Is left empty the default command (compatible with the default image) will run
+	Cmd []string
+
+	// Port sets the port of the container
+	// If left empty it will default to 3306
+	Port string
 }
 
 // Mysql starts up a mysql instance
@@ -31,12 +50,20 @@ func Mysql(config MysqlConfig) (*MysqlInstance, error) {
 		config.ProbeTimeout = 10 * time.Second
 	}
 
+	if config.Image == "" {
+		config.Image = "storytel/mysql-57-test"
+	}
+
+	if config.Port == "" {
+		config.Port = "3306"
+	}
+
 	i, err := dockerinitiator.CreateContainer(
 		dockerinitiator.ContainerConfig{
-			Image:         "storytel/mysql-57-test",
-			Cmd:           []string{},
+			Image:         config.Image,
+			Cmd:           config.Cmd,
 			Env:           []string{"MYSQL_ALLOW_EMPTY_PASSWORD=true", fmt.Sprintf("MYSQL_DATABASE=%s", config.DbName)},
-			ContainerPort: "3306",
+			ContainerPort: config.Port,
 			Tmpfs: map[string]string{
 				"/var/lib/mysql": "rw",
 			},
