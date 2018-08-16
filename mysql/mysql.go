@@ -17,6 +17,14 @@ type MysqlInstance struct {
 	MysqlConfig
 }
 
+var (
+	DefaultImage = "storytel/mysql-57-test"
+
+	DefaultCmd = []string{}
+
+	DefaultPort = "3306"
+)
+
 // MysqlConfig contains configs for mysql, User is automatically root
 type MysqlConfig struct {
 
@@ -31,15 +39,15 @@ type MysqlConfig struct {
 	ProbeTimeout time.Duration
 
 	// Image specifies the image used for the Mysql docker instance.
-	// If left empty the default image will be used
+	// If left empty it will be set to DefaultImage
 	Image string
 
 	// Cmd is the commands that will run in the container
-	// Is left empty the default command (compatible with the default image) will run
+	// Is left empty it will be set to DefaultCmd
 	Cmd []string
 
 	// Port sets the port of the container
-	// If left empty it will default to 3306
+	// If left empty it will be set to DefaultPort
 	Port string
 }
 
@@ -51,11 +59,15 @@ func Mysql(config MysqlConfig) (*MysqlInstance, error) {
 	}
 
 	if config.Image == "" {
-		config.Image = "storytel/mysql-57-test"
+		config.Image = DefaultImage
 	}
 
 	if config.Port == "" {
-		config.Port = "3306"
+		config.Port = DefaultPort
+	}
+
+	if len(config.Cmd) == 0 {
+		config.Cmd = DefaultCmd
 	}
 
 	i, err := dockerinitiator.CreateContainer(
