@@ -30,7 +30,7 @@ func TestMysql(t *testing.T) {
 }
 
 func TestMysqlCustomImage(t *testing.T) {
-	instance, err := Mysql(MysqlConfig{
+	mi, err := Mysql(MysqlConfig{
 		Password: "",
 		DbName:   "test-db",
 		Image:    "mysql:5.7",
@@ -40,32 +40,9 @@ func TestMysqlCustomImage(t *testing.T) {
 	}
 
 	defer func() {
-		assert.NoError(t, instance.Stop())
+		assert.NoError(t, mi.Stop())
 	}()
 
-	_, err = net.DialTimeout("tcp", instance.GetHost(), 1*time.Second)
-	if !assert.NoError(t, err) {
-		return
-	}
-}
-
-func TestMysqlCustomPort(t *testing.T) {
-	instance, err := Mysql(MysqlConfig{
-		Password: "",
-		DbName:   "test-db",
-		Image:    "mysql:5.7",
-		Port:     "3306",
-	})
-	if !assert.NoError(t, err) {
-		return
-	}
-
-	defer func() {
-		assert.NoError(t, instance.Stop())
-	}()
-
-	_, err = net.DialTimeout("tcp", instance.GetHost(), 1*time.Second)
-	if !assert.NoError(t, err) {
-		return
-	}
+	image, err := mi.GetDockerClient().InspectImage("mysql:5.7")
+	assert.Equal(t, image.ID, mi.GetDockerContainer().Image)
 }

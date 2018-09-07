@@ -48,3 +48,13 @@ func (i *Instance) Probe(timeout time.Duration) error {
 		}
 	}
 }
+
+// GetDockerContainer returns the underlaying *docker.Container for advanced interaction
+func (i *Instance) GetDockerContainer() *docker.Container {
+	return i.container
+}
+
+// GetDockerClient returns the docker client used to control this instance
+func (i *Instance) GetDockerClient() *docker.Client {
+	return i.client
+}
