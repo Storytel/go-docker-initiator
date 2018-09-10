@@ -48,3 +48,7 @@ func (i *Instance) Probe(timeout time.Duration) error {
 		}
 	}
 }
+
+func (i *Instance) Container() *docker.Container {
+	return i.container
+}
