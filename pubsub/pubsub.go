@@ -19,7 +19,7 @@ type PubSubInstance struct {
 var (
 	DefaultImage = "storytel/google-cloud-pubsub-emulator"
 
-	DefaultCmd = []string{"--host=0.0.0.0", "-port=8262"}
+	DefaultCmd = []string{"--host=0.0.0.0", "--port=8262"}
 
 	DefaultPort = "8262"
 )

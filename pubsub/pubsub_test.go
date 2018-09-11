@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"testing"
 
+	docker "github.com/fsouza/go-dockerclient"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -42,16 +43,17 @@ func TestPubSubCustomImage(t *testing.T) {
 		assert.NoError(t, instance.Stop())
 	}()
 
-	response, err := http.Get(fmt.Sprintf("http://%s/v1/projects/%s/topics", instance.GetHost(), instance.GetProject()))
-	if !assert.NoError(t, err) {
-		return
-	}
+	myClient, err := docker.NewClientFromEnv()
+	assert.NoError(t, err)
+	image, err := myClient.InspectImage("google/cloud-sdk:latest")
+	assert.NoError(t, err)
 
-	assert.Equal(t, 200, response.StatusCode)
+	assert.Equal(t, image.ID, instance.Container().Image)
 }
 
 func TestPubSubCustomPort(t *testing.T) {
 	instance, err := PubSub(PubSubConfig{
+		Cmd:  []string{"--host=0.0.0.0", "--port=8263"},
 		Port: "8263",
 	})
 	if !assert.NoError(t, err) {
