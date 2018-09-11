@@ -21,7 +21,7 @@ var (
 
 	DefaultCmd = []string{"--host=0.0.0.0", "--port=8262"}
 
-	DefaultPort = "8262"
+	DefaultExposedPort = "8262"
 )
 
 // PubSubConfig contains configs for pubsub
@@ -38,9 +38,9 @@ type PubSubConfig struct {
 	// Is left empty it will be set to DefaultCmd
 	Cmd []string
 
-	// Port sets the port of the container
-	// If left empty it will be set to DefaultPort
-	Port string
+	// ExposedPort sets the exposed port of the container
+	// If left empty it will be set to DefaultExposedPort
+	ExposedPort string
 }
 
 // PubSub will create a PubSub instance container
@@ -54,8 +54,8 @@ func PubSub(config PubSubConfig) (*PubSubInstance, error) {
 		config.Image = DefaultImage
 	}
 
-	if config.Port == "" {
-		config.Port = DefaultPort
+	if config.ExposedPort == "" {
+		config.ExposedPort = DefaultExposedPort
 	}
 
 	if len(config.Cmd) == 0 {
@@ -66,7 +66,7 @@ func PubSub(config PubSubConfig) (*PubSubInstance, error) {
 		dockerinitiator.ContainerConfig{
 			Image:         config.Image,
 			Cmd:           config.Cmd,
-			ContainerPort: config.Port,
+			ContainerPort: config.ExposedPort,
 		},
 		dockerinitiator.HTTPProbe{})
 	if err != nil {

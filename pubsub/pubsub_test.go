@@ -31,9 +31,9 @@ func TestPubSub(t *testing.T) {
 
 func TestPubSubCustomImage(t *testing.T) {
 	instance, err := PubSub(PubSubConfig{
-		Image: "google/cloud-sdk:latest",
-		Cmd:   []string{"gcloud", "beta", "emulators", "pubsub", "start", "--host-port", "0.0.0.0:8262"},
-		Port:  "8262",
+		Image:       "google/cloud-sdk:latest",
+		Cmd:         []string{"gcloud", "beta", "emulators", "pubsub", "start", "--host-port", "0.0.0.0:8262"},
+		ExposedPort: "8262",
 	})
 	if !assert.NoError(t, err) {
 		return
@@ -53,8 +53,8 @@ func TestPubSubCustomImage(t *testing.T) {
 
 func TestPubSubCustomPort(t *testing.T) {
 	instance, err := PubSub(PubSubConfig{
-		Cmd:  []string{"--host=0.0.0.0", "--port=8263"},
-		Port: "8263",
+		Cmd:         []string{"--host=0.0.0.0", "--port=8263"},
+		ExposedPort: "8263",
 	})
 	if !assert.NoError(t, err) {
 		return

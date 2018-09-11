@@ -50,7 +50,7 @@ func TestCreateContainer(t *testing.T) {
 		assert.NoError(t, instance.Stop())
 	}()
 
-	assertNumContainersFilter(t, 1, map[string][]string{"id": []string{instance.container.ID}})
+	assertNumContainersFilter(t, 1, map[string][]string{"id": []string{instance.Container().ID}})
 }
 
 func TestTwoInstanceCoexist(t *testing.T) {

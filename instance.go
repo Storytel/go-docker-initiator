@@ -10,9 +10,9 @@ import (
 // Instance contains the setup for the docker instance
 type Instance struct {
 	client    *docker.Client
-	container *docker.Container
 	host      string
 	probe     Probe
+	container *docker.Container
 }
 
 // Stop will remove the instance container

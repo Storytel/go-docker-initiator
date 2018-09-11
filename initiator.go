@@ -22,6 +22,7 @@ type ContainerConfig struct {
 var obsoleteAfter float64 = 10 * 60 // in seconds
 var creator = "go-docker-initiator"
 
+// CreateContainer applies the config and creates the container
 func CreateContainer(config ContainerConfig, prober Probe) (*Instance, error) {
 	client, err := docker.NewClientFromEnv()
 	if err != nil {
@@ -63,10 +64,10 @@ func CreateContainer(config ContainerConfig, prober Probe) (*Instance, error) {
 	host := fmt.Sprintf("%s:%d", "127.0.0.1", getHostPort(container, config.ContainerPort))
 
 	instance := &Instance{
-		client,
-		container,
-		host,
-		prober,
+		client:    client,
+		host:      host,
+		probe:     prober,
+		container: container,
 	}
 
 	return instance, nil

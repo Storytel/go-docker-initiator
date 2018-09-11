@@ -20,9 +20,9 @@ type MysqlInstance struct {
 var (
 	DefaultImage = "storytel/mysql-57-test"
 
-	DefaultCmd = []string{}
+	defaultCmd = []string{}
 
-	DefaultPort = "3306"
+	defaultExposedPort = "3306"
 )
 
 // MysqlConfig contains configs for mysql, User is automatically root
@@ -41,14 +41,6 @@ type MysqlConfig struct {
 	// Image specifies the image used for the Mysql docker instance.
 	// If left empty it will be set to DefaultImage
 	Image string
-
-	// Cmd is the commands that will run in the container
-	// Is left empty it will be set to DefaultCmd
-	Cmd []string
-
-	// Port sets the port of the container
-	// If left empty it will be set to DefaultPort
-	Port string
 }
 
 // Mysql starts up a mysql instance
@@ -62,20 +54,12 @@ func Mysql(config MysqlConfig) (*MysqlInstance, error) {
 		config.Image = DefaultImage
 	}
 
-	if config.Port == "" {
-		config.Port = DefaultPort
-	}
-
-	if len(config.Cmd) == 0 {
-		config.Cmd = DefaultCmd
-	}
-
 	i, err := dockerinitiator.CreateContainer(
 		dockerinitiator.ContainerConfig{
 			Image:         config.Image,
-			Cmd:           config.Cmd,
+			Cmd:           defaultCmd,
 			Env:           []string{"MYSQL_ALLOW_EMPTY_PASSWORD=true", fmt.Sprintf("MYSQL_DATABASE=%s", config.DbName)},
-			ContainerPort: config.Port,
+			ContainerPort: defaultExposedPort,
 			Tmpfs: map[string]string{
 				"/var/lib/mysql": "rw",
 			},
