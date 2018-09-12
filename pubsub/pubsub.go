@@ -16,9 +16,31 @@ type PubSubInstance struct {
 	PubSubConfig
 }
 
+var (
+	DefaultImage = "storytel/google-cloud-pubsub-emulator"
+
+	DefaultCmd = []string{"--host=0.0.0.0", "--port=8262"}
+
+	DefaultExposedPort = "8262"
+)
+
 // PubSubConfig contains configs for pubsub
 type PubSubConfig struct {
+	// ProbeTimeout specifies the timeout for the probing.
+	// A timeout results in a startup error, if left empty a default value is used
 	ProbeTimeout time.Duration
+
+	// Image specifies the image used for the Mysql docker instance.
+	// If left empty it will be set to DefaultImage
+	Image string
+
+	// Cmd is the commands that will run in the container
+	// Is left empty it will be set to DefaultCmd
+	Cmd []string
+
+	// ExposedPort sets the exposed port of the container
+	// If left empty it will be set to DefaultExposedPort
+	ExposedPort string
 }
 
 // PubSub will create a PubSub instance container
@@ -28,11 +50,23 @@ func PubSub(config PubSubConfig) (*PubSubInstance, error) {
 		config.ProbeTimeout = 10 * time.Second
 	}
 
+	if config.Image == "" {
+		config.Image = DefaultImage
+	}
+
+	if config.ExposedPort == "" {
+		config.ExposedPort = DefaultExposedPort
+	}
+
+	if len(config.Cmd) == 0 {
+		config.Cmd = DefaultCmd
+	}
+
 	i, err := dockerinitiator.CreateContainer(
 		dockerinitiator.ContainerConfig{
-			Image:         "storytel/google-cloud-pubsub-emulator",
-			Cmd:           []string{"--host=0.0.0.0", "-port=8262"},
-			ContainerPort: "8262",
+			Image:         config.Image,
+			Cmd:           config.Cmd,
+			ContainerPort: config.ExposedPort,
 		},
 		dockerinitiator.HTTPProbe{})
 	if err != nil {
