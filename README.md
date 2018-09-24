@@ -103,3 +103,7 @@ Then run it:
 ```
 go test -tags=<TAG> ./...
 ```
+
+## Storytel Go
+
+https://github.com/Storytel/go-mysql-seed - Simple MySQL seeding package
