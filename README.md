@@ -26,7 +26,7 @@ import dockerinitiator github.com/Storytel/go-docker-initiator
 
 ## Examples
 
-This package is especially useful for testing. With `go-docker-initiator` the configuration for your external integrations lives in the code and not in 3th party configuration files.
+This package is especially useful for testing. With `go-docker-initiator` the configuration for your external integrations lives in the code and not in 3rd party configuration files.
 
 Below is a typical and simple example using `go-docker-initiator` in a test.
 
@@ -82,15 +82,15 @@ func TestDatabaseIntegration(t *testing.T) {
 
 	// Test your integration
 	_, err = exmapleService.Create()
-	assert.Error(t, err)
+	assert.NoError(t, err)
 }
 ```
 
 ## Notes
 
-A single image can be easily shared between tests using techniques such as [test suites](https://godoc.org/github.com/stretchr/testify/suite).
+A single image can be easily shared between tests using techniques such as [TableDrivenTests](https://github.com/golang/go/wiki/TableDrivenTests).
 
-As is often the case, if you have tests set to automatically run on each file-save you might do best to tag the tests running with `go-docker-initiator` to avoid long-running tests.
+As is often the case, if you have tests set to automatically run on each file-save you might do best to tag the tests running with `go-docker-initiator` to avoid running them on-save.
 
 Tag a file like so:
 
@@ -98,7 +98,7 @@ Tag a file like so:
 // +build <TAG>
 ```
 
-Then run it:
+Since the tests with the tag wont run automatically you have to manually invoke it with:
 
 ```
 go test -tags=<TAG> ./...
