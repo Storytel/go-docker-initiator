@@ -1,5 +1,7 @@
 # go-docker-initiator
 
+[![Build Status](https://travis-ci.com/Storytel/go-docker-initiator.svg?branch=master)](https://travis-ci.com/Storytel/go-docker-initiator)
+
 Utility for starting docker containers from Go code.
 Useful for testing.
 
