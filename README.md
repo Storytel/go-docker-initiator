@@ -30,7 +30,7 @@ This package is especially useful for testing. With `go-docker-initiator` the co
 
 Below is a typical and simple example using `go-docker-initiator` in a test.
 
-```
+```go
 package example_test
 
 import (
