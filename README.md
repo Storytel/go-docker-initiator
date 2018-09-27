@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.com/Storytel/go-docker-initiator.svg?branch=master)](https://travis-ci.com/Storytel/go-docker-initiator)
 [![codecov](https://codecov.io/gh/Storytel/go-docker-initiator/branch/master/graph/badge.svg)](https://codecov.io/gh/Storytel/go-docker-initiator)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Storytel/go-docker-initiator)](https://goreportcard.com/report/github.com/Storytel/go-docker-initiator)
 
 Utility for starting docker containers from Go code.
 Useful for testing.
