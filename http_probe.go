@@ -10,7 +10,7 @@ import (
 
 var _ Probe = HTTPProbe{}
 
-// HTTPProbe implementes the IProbe interface for HTTP connections
+// HTTPProbe implements the IProbe interface for HTTP connections
 type HTTPProbe struct {
 }
 

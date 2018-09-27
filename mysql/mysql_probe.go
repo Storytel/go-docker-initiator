@@ -13,7 +13,7 @@ import (
 
 var _ dockerinitiator.Probe = MysqlProbe{}
 
-// MysqlProbe implementes the IProbe interface for mysql instances
+// MysqlProbe implements the IProbe interface for mysql instances
 type MysqlProbe struct {
 	MysqlConfig
 }

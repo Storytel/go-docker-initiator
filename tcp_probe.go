@@ -7,7 +7,7 @@ import (
 
 var _ Probe = TCPProbe{}
 
-// TCPProbe implementes the IProbe interface for TPC connections
+// TCPProbe implements the IProbe interface for TPC connections
 type TCPProbe struct {
 }
 
