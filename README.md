@@ -42,17 +42,17 @@ import (
 	"testing"
 
 	dockerinitiator "github.com/Storytel/go-docker-initiator"
+	mysqlinitiator "github.com/Storytel/go-docker-initiator/mysql"
 	"github.com/stretchr/testify/assert"
 )
 
 // WithMySQL will clear obsolete containers an spin up a mysql container for use
-func WithMySQL() *dockerinitiator.mysql.MysqlInstance {
+func WithMySQL() *mysqlinitiator.MysqlInstance {
 	if err := dockerinitiator.ClearObsolete(); err != nil {
 		log.Panic(err)
 	}
 
-	instance, err := dockerinitiator.mysql.Mysql(dockerinitiator.MysqlConfig{
-		User:     "root",
+	instance, err := mysqlinitiator.Mysql(mysqlinitiator.MysqlConfig{
 		Password: "",
 		DbName:   "testdb",
 	})
