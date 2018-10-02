@@ -46,12 +46,12 @@ import (
 )
 
 // WithMySQL will clear obsolete containers an spin up a mysql container for use
-func WithMySQL() *dockerinitiator.MysqlInstance {
+func WithMySQL() *dockerinitiator.mysql.MysqlInstance {
 	if err := dockerinitiator.ClearObsolete(); err != nil {
 		log.Panic(err)
 	}
 
-	instance, err := dockerinitiator.Mysql(dockerinitiator.MysqlConfig{
+	instance, err := dockerinitiator.mysql.Mysql(dockerinitiator.MysqlConfig{
 		User:     "root",
 		Password: "",
 		DbName:   "testdb",
