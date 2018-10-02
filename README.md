@@ -71,6 +71,7 @@ func WithMySQL() *dockerinitiator.MysqlInstance {
 
 func TestDatabaseIntegration(t *testing.T) {
 	mysqlInstance := WithMySQL()
+	defer mysqlInstance.Stop()
 
 	// Establish a database connection to the exposed environment variables
 	db, err := InitAndCreateDatabase()
