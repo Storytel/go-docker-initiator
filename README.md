@@ -11,8 +11,8 @@ Useful for testing.
 
 This library currently supports the following services out of the box:
 
-- [pubsub](pubsub.go)
-- [mysql](mysql.go)
+- [pubsub](pubsub/pubsub.go)
+- [mysql](mysql/mysql.go)
 
 ## Installation
 
