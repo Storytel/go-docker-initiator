@@ -26,7 +26,7 @@ type ContainerConfig struct {
 	Tmpfs         map[string]string
 }
 
-var obsoleteAfter = 10 * time.Minute
+var ObsoleteAfter = 10 * time.Minute
 var creator = "go-docker-initiator"
 
 // CreateContainer applies the config and creates the container
@@ -128,7 +128,7 @@ func ClearObsolete() error {
 			return err
 		}
 
-		if time.Since(startedAt) > obsoleteAfter {
+		if time.Since(startedAt) > ObsoleteAfter {
 			log.Printf("Removing obsolete container %s", inspectResp.ID)
 			err = client.ContainerRemove(ctx, inspectResp.ID, types.ContainerRemoveOptions{
 				Force: true,

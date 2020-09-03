@@ -1,6 +1,6 @@
 // +build integration
 
-package mysql
+package mysql_test
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	. "github.com/Storytel/go-docker-initiator/mysql"
 	docker "github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
 )

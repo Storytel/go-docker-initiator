@@ -1,4 +1,4 @@
-package dockerinitiator
+package pubsub
 
 import (
 	"math/rand"

@@ -1,6 +1,6 @@
 // +build integration
 
-package dockerinitiator
+package dockerinitiator_test
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"testing"
 
+	. "github.com/Storytel/go-docker-initiator"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
 	docker "github.com/docker/docker/client"
@@ -16,7 +17,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	obsoleteAfter = -9999 // So they're determined obsolete
+	ObsoleteAfter = -9999 // So they're determined obsolete
 	if err := ClearObsolete(); err != nil {
 		log.Panic(err)
 	}

@@ -1,6 +1,6 @@
 // +build integration
 
-package dockerinitiator
+package pubsub_test
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"testing"
 
+	. "github.com/Storytel/go-docker-initiator/pubsub"
 	docker "github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
 )
