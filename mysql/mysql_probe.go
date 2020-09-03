@@ -37,10 +37,10 @@ func (i MysqlProbe) DoProbe(instance *dockerinitiator.Instance) error {
 	}()
 
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s", "root", i.Password, instance.GetHost(), i.DbName))
-	defer db.Close()
 	if err != nil {
 		return err
 	}
+	defer db.Close()
 
 	var version string
 	err = db.QueryRow("SELECT VERSION()").Scan(&version)

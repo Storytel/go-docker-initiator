@@ -3,11 +3,12 @@
 package dockerinitiator
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
 
-	docker "github.com/fsouza/go-dockerclient"
+	docker "github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -43,12 +44,12 @@ func TestPubSubCustomImage(t *testing.T) {
 		assert.NoError(t, instance.Stop())
 	}()
 
-	myClient, err := docker.NewClientFromEnv()
+	client, err := docker.NewClientWithOpts(docker.FromEnv, docker.WithAPIVersionNegotiation())
 	assert.NoError(t, err)
-	image, err := myClient.InspectImage("google/cloud-sdk:latest")
+	inspectResp, _, err := client.ImageInspectWithRaw(context.Background(), "google/cloud-sdk:latest")
 	assert.NoError(t, err)
 
-	assert.Equal(t, image.ID, instance.Container().Image)
+	assert.Equal(t, inspectResp.ID, instance.Container().Image)
 }
 
 func TestPubSubCustomPort(t *testing.T) {

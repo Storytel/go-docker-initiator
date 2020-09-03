@@ -3,11 +3,15 @@
 package dockerinitiator
 
 import (
+	"context"
 	"log"
+	"os"
 	"regexp"
 	"testing"
 
-	docker "github.com/fsouza/go-dockerclient"
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/filters"
+	docker "github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,18 +22,19 @@ func TestMain(m *testing.M) {
 	}
 
 	m.Run()
+	os.Exit(0)
 }
 
 func assertNumContainers(t *testing.T, num int) {
-	assertNumContainersFilter(t, num, map[string][]string{})
+	assertNumContainersFilter(t, num, filters.NewArgs())
 }
 
-func assertNumContainersFilter(t *testing.T, num int, filters map[string][]string) {
-	client, err := docker.NewClientFromEnv()
+func assertNumContainersFilter(t *testing.T, num int, filters filters.Args) {
+	client, err := docker.NewClientWithOpts(docker.FromEnv, docker.WithAPIVersionNegotiation())
 	assert.NoError(t, err)
 
-	filters["label"] = append(filters["label"], "creator=go-docker-initiator")
-	containers, err := client.ListContainers(docker.ListContainersOptions{
+	filters.Add("label", "creator=go-docker-initiator")
+	containers, err := client.ContainerList(context.Background(), types.ContainerListOptions{
 		Filters: filters,
 	})
 	assert.NoError(t, err)
@@ -50,7 +55,7 @@ func TestCreateContainer(t *testing.T) {
 		assert.NoError(t, instance.Stop())
 	}()
 
-	assertNumContainersFilter(t, 1, map[string][]string{"id": []string{instance.Container().ID}})
+	assertNumContainersFilter(t, 1, filters.NewArgs(filters.Arg("id", instance.Container().ID)))
 }
 
 func TestTwoInstanceCoexist(t *testing.T) {
@@ -94,7 +99,7 @@ func TestGetHost(t *testing.T) {
 		assert.NoError(t, instance.Stop())
 	}()
 
-	assert.Regexp(t, regexp.MustCompile("^127.0.0.1:\\d+$"), instance.GetHost())
+	assert.Regexp(t, regexp.MustCompile(`^127.0.0.1:\d+$`), instance.GetHost())
 }
 
 func TestClearObsolete(t *testing.T) {

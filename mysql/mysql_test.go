@@ -3,12 +3,12 @@
 package mysql
 
 import (
+	"context"
 	"net"
 	"testing"
 	"time"
 
-	"github.com/fsouza/go-dockerclient"
-
+	docker "github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,9 +45,9 @@ func TestMysqlCustomImage(t *testing.T) {
 		assert.NoError(t, instance.Stop())
 	}()
 
-	myClient, err := docker.NewClientFromEnv()
+	client, err := docker.NewClientWithOpts(docker.FromEnv, docker.WithAPIVersionNegotiation())
 	assert.NoError(t, err)
-	image, err := myClient.InspectImage("mysql:5.7")
+	image, _, err := client.ImageInspectWithRaw(context.Background(), "mysql:5.7")
 	assert.NoError(t, err)
 
 	assert.Equal(t, image.ID, instance.Container().Image)
