@@ -4,7 +4,7 @@ services:
   - docker
 
 go:
-  - "1.10"
+  - "1.15"
 
 install:
   - go get -t -tags=integration ./...
