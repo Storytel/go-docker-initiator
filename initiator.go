@@ -92,8 +92,6 @@ func getHostPort(container types.ContainerJSON, containerport string) uint16 {
 		log.Panic("No port configuration found on the created container")
 	}
 
-	log.Printf("%+v", container.NetworkSettings)
-
 	port, err := strconv.ParseUint(val[0].HostPort, 10, 32)
 	if err != nil {
 		log.Panicf("Failed to parse the hostport (%s) to uint16", val[0].HostPort)
