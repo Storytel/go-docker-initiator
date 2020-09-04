@@ -4,23 +4,22 @@ import (
 	"context"
 	"time"
 
-	docker "github.com/fsouza/go-dockerclient"
+	"github.com/docker/docker/api/types"
+	dockerclient "github.com/docker/docker/client"
 )
 
 // Instance contains the setup for the docker instance
 type Instance struct {
-	client    *docker.Client
+	client    *dockerclient.Client
 	host      string
 	probe     Probe
-	container *docker.Container
+	container types.ContainerJSON
 }
 
 // Stop will remove the instance container
 func (i *Instance) Stop() error {
-	return i.client.RemoveContainer(docker.RemoveContainerOptions{
-		ID:    i.container.ID,
-		Force: true,
-	})
+	ctx := context.Background()
+	return i.client.ContainerRemove(ctx, i.container.ID, types.ContainerRemoveOptions{Force: true})
 }
 
 // GetHost will fetch the host of the instance container
@@ -49,6 +48,6 @@ func (i *Instance) Probe(timeout time.Duration) error {
 	}
 }
 
-func (i *Instance) Container() *docker.Container {
+func (i *Instance) Container() types.ContainerJSON {
 	return i.container
 }

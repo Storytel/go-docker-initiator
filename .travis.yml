@@ -4,7 +4,7 @@ services:
   - docker
 
 go:
-  - "1.10"
+  - "1.15"
 
 install:
   - go get -t -tags=integration ./...
@@ -13,7 +13,8 @@ script:
   - go test -v -race -coverprofile=coverage.txt -covermode=atomic -tags=integration
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - go get github.com/mattn/goveralls
+  - goveralls -coverprofile=coverage.txt
 
 notifications:
   email: false
