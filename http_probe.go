@@ -36,5 +36,5 @@ func (i HTTPProbe) DoProbe(instance *Instance) error {
 		return nil
 	}
 
-	return errors.New("Invalid status: " + result.Status)
+	return errors.New("invalid status: " + result.Status)
 }

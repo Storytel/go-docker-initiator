@@ -89,12 +89,12 @@ func getHostPort(container types.ContainerJSON, containerport string) uint16 {
 
 	val, ok := container.NetworkSettings.Ports[nat.Port(containerport)]
 	if !ok {
-		log.Panic("No port configuration found on the created container")
+		log.Panic("no port configuration found on the created container")
 	}
 
 	port, err := strconv.ParseUint(val[0].HostPort, 10, 32)
 	if err != nil {
-		log.Panicf("Failed to parse the hostport (%s) to uint16", val[0].HostPort)
+		log.Panicf("failed to parse the hostport (%s) to uint16", val[0].HostPort)
 	}
 
 	return uint16(port)
@@ -129,7 +129,7 @@ func ClearObsolete() error {
 		}
 
 		if time.Since(startedAt) > ObsoleteAfter {
-			log.Printf("Removing obsolete container %s", inspectResp.ID)
+			log.Printf("removing obsolete container %s", inspectResp.ID)
 			err = client.ContainerRemove(ctx, inspectResp.ID, types.ContainerRemoveOptions{
 				Force: true,
 			})
