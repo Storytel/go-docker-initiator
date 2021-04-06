@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types"
-	dockerclient "github.com/docker/docker/client"
+	docker "github.com/docker/docker/client"
 )
 
 // Instance contains the setup for the docker instance
 type Instance struct {
-	client    *dockerclient.Client
+	client    *docker.Client
 	host      string
 	probe     Probe
 	container types.ContainerJSON

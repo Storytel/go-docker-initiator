@@ -1,5 +1,3 @@
-// +build integration
-
 package mysql_test
 
 import (
@@ -15,8 +13,9 @@ import (
 
 func TestMysql(t *testing.T) {
 	instance, err := Mysql(MysqlConfig{
-		Password: "",
-		DbName:   "test-db",
+		Password:     "",
+		DbName:       "test-db",
+		ProbeTimeout: 20 * time.Second,
 	})
 	if !assert.NoError(t, err) {
 		return
@@ -34,9 +33,10 @@ func TestMysql(t *testing.T) {
 
 func TestMysqlCustomImage(t *testing.T) {
 	instance, err := Mysql(MysqlConfig{
-		Password: "",
-		DbName:   "test-db",
-		Image:    "mysql:5.7",
+		Password:     "",
+		DbName:       "test-db",
+		Image:        "mysql:5.7",
+		ProbeTimeout: 20 * time.Second,
 	})
 	if !assert.NoError(t, err) {
 		return

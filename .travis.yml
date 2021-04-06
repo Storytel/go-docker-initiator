@@ -7,10 +7,10 @@ go:
   - "1.15"
 
 install:
-  - go get -t -tags=integration ./...
+  - go get -t ./...
 
 script:
-  - go test -v -race -coverprofile=coverage.txt -covermode=atomic -tags=integration
+  - go test -v -race -coverprofile=coverage.txt -covermode=atomic
 
 after_success:
   - go get github.com/mattn/goveralls

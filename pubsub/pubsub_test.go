@@ -1,5 +1,3 @@
-// +build integration
-
 package pubsub_test
 
 import (
@@ -33,8 +31,8 @@ func TestPubSub(t *testing.T) {
 
 func TestPubSubCustomImage(t *testing.T) {
 	instance, err := PubSub(PubSubConfig{
-		Image:       "google/cloud-sdk:latest",
-		Cmd:         []string{"gcloud", "beta", "emulators", "pubsub", "start", "--host-port", "0.0.0.0:8262"},
+		Image:       "google/cloud-sdk:322.0.0-emulators",
+		Cmd:         []string{"/google-cloud-sdk/platform/pubsub-emulator/bin/cloud-pubsub-emulator", "--host=0.0.0.0", "--port=8262"},
 		ExposedPort: "8262",
 	})
 	if !assert.NoError(t, err) {
@@ -47,7 +45,7 @@ func TestPubSubCustomImage(t *testing.T) {
 
 	client, err := docker.NewClientWithOpts(docker.FromEnv, docker.WithAPIVersionNegotiation())
 	assert.NoError(t, err)
-	inspectResp, _, err := client.ImageInspectWithRaw(context.Background(), "google/cloud-sdk:latest")
+	inspectResp, _, err := client.ImageInspectWithRaw(context.Background(), "google/cloud-sdk:322.0.0-emulators")
 	assert.NoError(t, err)
 
 	assert.Equal(t, inspectResp.ID, instance.Container().Image)

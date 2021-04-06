@@ -1,5 +1,3 @@
-// +build integration
-
 package dockerinitiator_test
 
 import (

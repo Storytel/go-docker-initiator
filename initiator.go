@@ -56,7 +56,7 @@ func CreateContainer(config ContainerConfig, prober Probe) (*Instance, error) {
 		Labels: map[string]string{"creator": creator},
 	}, &container.HostConfig{
 		PublishAllPorts: true,
-	}, nil, "")
+	}, nil, nil, "")
 	if err != nil {
 		return nil, err
 	}
