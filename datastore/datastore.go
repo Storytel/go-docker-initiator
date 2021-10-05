@@ -1,4 +1,4 @@
-package firestore
+package datastore
 
 import (
 	"math/rand"
@@ -9,23 +9,23 @@ import (
 	dockerinitiator "github.com/Storytel/go-docker-initiator"
 )
 
-// FirestoreInstance contains the instance config for a Firestore image
-type FirestoreInstance struct {
+// DatastoreInstance contains the instance config for a Datastore image
+type DatastoreInstance struct {
 	*dockerinitiator.Instance
 	project string
-	FirestoreConfig
+	DatastoreConfig
 }
 
 var (
-	DefaultImage = "storytel/gcp-firestore-emulator"
+	DefaultImage = "storytel/google-cloud-datastore-emulator"
 
 	DefaultCmd = []string{"--host=0.0.0.0", "--port=8263"}
 
 	DefaultExposedPort = "8263"
 )
 
-// FirestoreConfig contains configs for firestore
-type FirestoreConfig struct {
+// DatastoreConfig contains configs for datastore
+type DatastoreConfig struct {
 	// ProbeTimeout specifies the timeout for the probing.
 	// A timeout results in a startup error, if left empty a default value is used
 	ProbeTimeout time.Duration
@@ -43,8 +43,8 @@ type FirestoreConfig struct {
 	ExposedPort string
 }
 
-// Firestore will create a Firestore instance container
-func Firestore(config FirestoreConfig) (*FirestoreInstance, error) {
+// Datastore will create a Datastore instance container
+func Datastore(config DatastoreConfig) (*DatastoreInstance, error) {
 	if config.ProbeTimeout == 0 {
 		config.ProbeTimeout = 10 * time.Second
 	}
@@ -73,7 +73,7 @@ func Firestore(config FirestoreConfig) (*FirestoreInstance, error) {
 	}
 
 	project := "__docker_initiator__project-" + strconv.Itoa(rand.Int())[:8]
-	fsi := &FirestoreInstance{
+	fsi := &DatastoreInstance{
 		i,
 		project,
 		config,
@@ -87,13 +87,13 @@ func Firestore(config FirestoreConfig) (*FirestoreInstance, error) {
 }
 
 // Setenv sets the required variables for running against the emulator
-func (fsi *FirestoreInstance) Setenv() error {
-	err := os.Setenv("FIRESTORE_EMULATOR_HOST", fsi.GetHost())
+func (fsi *DatastoreInstance) Setenv() error {
+	err := os.Setenv("DATASTORE_EMULATOR_HOST", fsi.GetHost())
 	if err != nil {
 		return err
 	}
 
-	err = os.Setenv("FIRESTORE_GOOGLE_CLOUD_PROJECT", fsi.GetProject())
+	err = os.Setenv("GOOGLE_CLOUD_PROJECT", fsi.GetProject())
 	if err != nil {
 		return err
 	}
@@ -101,7 +101,7 @@ func (fsi *FirestoreInstance) Setenv() error {
 	return nil
 }
 
-// GetProject fetches the project for the firestore instance
-func (fsi *FirestoreInstance) GetProject() string {
+// GetProject fetches the project for the datastore instance
+func (fsi *DatastoreInstance) GetProject() string {
 	return fsi.project
 }

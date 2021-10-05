@@ -1,4 +1,4 @@
-package firestore_test
+package datastore_test
 
 import (
 	"context"
@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"testing"
 
-	. "github.com/Storytel/go-docker-initiator/firestore"
+	. "github.com/Storytel/go-docker-initiator/datastore"
 	docker "github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFirestore(t *testing.T) {
-	instance, err := Firestore(FirestoreConfig{})
+func TestDatastore(t *testing.T) {
+	instance, err := Datastore(DatastoreConfig{})
 	if !assert.NoError(t, err) {
 		return
 	}
@@ -29,10 +29,16 @@ func TestFirestore(t *testing.T) {
 	assert.Equal(t, 200, response.StatusCode)
 }
 
-func TestFirestoreCustomImage(t *testing.T) {
-	instance, err := Firestore(FirestoreConfig{
-		Image:       "google/cloud-sdk:322.0.0-emulators",
-		Cmd:         []string{"/google-cloud-sdk/platform/cloud-firestore-emulator/cloud_firestore_emulator", "--host=0.0.0.0", "--port=8263"},
+func TestDatastoreCustomImage(t *testing.T) {
+	instance, err := Datastore(DatastoreConfig{
+		Image: "google/cloud-sdk:322.0.0-emulators",
+		Cmd: []string{
+			"/google-cloud-sdk/platform/cloud-datastore-emulator/cloud_datastore_emulator",
+			"start",
+			"--host=0.0.0.0",
+			"--port=8263",
+			"--store_on_disk=false",
+		},
 		ExposedPort: "8263",
 	})
 	if !assert.NoError(t, err) {
@@ -51,8 +57,8 @@ func TestFirestoreCustomImage(t *testing.T) {
 	assert.Equal(t, inspectResp.ID, instance.Container().Image)
 }
 
-func TestFirestoreCustomPort(t *testing.T) {
-	instance, err := Firestore(FirestoreConfig{
+func TestDatastoreCustomPort(t *testing.T) {
+	instance, err := Datastore(DatastoreConfig{
 		Cmd:         []string{"--host=0.0.0.0", "--port=7263"},
 		ExposedPort: "7263",
 	})
