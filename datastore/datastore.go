@@ -72,7 +72,7 @@ func Datastore(config DatastoreConfig) (*DatastoreInstance, error) {
 		return nil, err
 	}
 
-	project := "__docker_initiator__project-" + strconv.Itoa(rand.Int())[:8]
+	project := "docker-initiator--project-" + strconv.Itoa(rand.Int())[:8]
 	fsi := &DatastoreInstance{
 		i,
 		project,
