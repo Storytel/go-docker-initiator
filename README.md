@@ -13,6 +13,7 @@ This library currently supports the following services out of the box:
 
 - [pubsub](pubsub/pubsub.go)
 - [mysql](mysql/mysql.go)
+- [datastore](datastore/datastore.go)
 
 ## Installation
 
