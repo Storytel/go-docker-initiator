@@ -30,7 +30,7 @@ type DatastoreConfig struct {
 	// A timeout results in a startup error, if left empty a default value is used
 	ProbeTimeout time.Duration
 
-	// Image specifies the image used for the Mysql docker instance.
+	// Image specifies the image used for the Datastore docker instance.
 	// If left empty it will be set to DefaultImage
 	Image string
 
