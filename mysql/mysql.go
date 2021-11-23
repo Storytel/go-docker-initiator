@@ -8,6 +8,7 @@ import (
 	"time"
 
 	dockerinitiator "github.com/Storytel/go-docker-initiator"
+	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 )
 
 // MysqlInstance contains the config for mysql instance
@@ -41,6 +42,9 @@ type MysqlConfig struct {
 	// Image specifies the image used for the Mysql docker instance.
 	// If left empty it will be set to DefaultImage
 	Image string
+
+	// Platform if you want to specify it. Can be nil.
+	Platform *v1.Platform
 }
 
 // Mysql starts up a mysql instance
@@ -54,7 +58,7 @@ func Mysql(config MysqlConfig) (*MysqlInstance, error) {
 		config.Image = DefaultImage
 	}
 
-	i, err := dockerinitiator.CreateContainer(
+	i, err := dockerinitiator.CreateContainerWithPlatform(
 		dockerinitiator.ContainerConfig{
 			Image:         config.Image,
 			Cmd:           defaultCmd,
@@ -64,6 +68,7 @@ func Mysql(config MysqlConfig) (*MysqlInstance, error) {
 				"/var/lib/mysql": "rw",
 			},
 		},
+		config.Platform,
 		MysqlProbe{
 			config,
 		})
