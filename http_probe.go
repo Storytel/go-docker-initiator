@@ -26,7 +26,7 @@ func (i HTTPProbe) DoProbe(instance *Instance) error {
 
 	reqctx, cancelFunc := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancelFunc()
-	req.WithContext(reqctx)
+	req = req.WithContext(reqctx)
 	result, err := client.Do(req)
 	if err != nil {
 		return err

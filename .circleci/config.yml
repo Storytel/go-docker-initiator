@@ -1,0 +1,44 @@
+version: 2.1
+
+orbs:
+  go-check: storytel/go-check@1
+
+parameters:
+  go-version:
+    type: string
+    default: "1.17"
+
+jobs:
+  Build:
+    executor:
+      name: go-check/go
+      version: <<pipeline.parameters.go-version>>
+    steps:
+      - checkout
+      - go-check/build
+
+  Lint:
+    executor:
+      name: go-check/go
+      version: <<pipeline.parameters.go-version>>
+    steps:
+      - checkout
+      - go-check/staticcheck
+      - go-check/fmt
+      - go-check/vet
+
+workflows:
+  version: 2
+  All:
+    jobs:
+      - Build:
+          context: ci
+          filters:
+            tags:
+              only: /^v.*/
+
+      - Lint:
+          context: ci
+          filters:
+            tags:
+              only: /^v.*/
