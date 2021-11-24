@@ -15,6 +15,7 @@ import (
 	"github.com/docker/docker/api/types/filters"
 	docker "github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
+	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 )
 
 // ContainerConfig holds a subset of all of the configuration options available for the docker instance
@@ -29,8 +30,15 @@ type ContainerConfig struct {
 var ObsoleteAfter = 10 * time.Minute
 var creator = "go-docker-initiator"
 
-// CreateContainer applies the config and creates the container
+// CreateContainer will create a new container with the specified Probe to check if it is up
 func CreateContainer(config ContainerConfig, prober Probe) (*Instance, error) {
+	return CreateContainerWithPlatform(config, nil, prober)
+}
+
+// CreateContainerWithPlatform applies the config and creates the container
+// config specifices configuration for the container
+// platform if you want to specificy a certain platform. nil if you want to use default.
+func CreateContainerWithPlatform(config ContainerConfig, platform *v1.Platform, prober Probe) (*Instance, error) {
 	ctx := context.Background()
 
 	client, err := docker.NewClientWithOpts(docker.FromEnv, docker.WithAPIVersionNegotiation())
@@ -56,7 +64,7 @@ func CreateContainer(config ContainerConfig, prober Probe) (*Instance, error) {
 		Labels: map[string]string{"creator": creator},
 	}, &container.HostConfig{
 		PublishAllPorts: true,
-	}, nil, nil, "")
+	}, nil, platform, "")
 	if err != nil {
 		return nil, err
 	}
