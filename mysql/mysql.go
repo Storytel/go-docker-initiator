@@ -18,7 +18,7 @@ type MysqlInstance struct {
 }
 
 var (
-	DefaultImage = "storytel/mysql-57-test"
+	DefaultImage = "mysql:5.7"
 
 	defaultCmd = []string{}
 
