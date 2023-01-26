@@ -51,7 +51,7 @@ type MysqlConfig struct {
 func Mysql(config MysqlConfig) (*MysqlInstance, error) {
 
 	if config.ProbeTimeout == 0 {
-		config.ProbeTimeout = 10 * time.Second
+		config.ProbeTimeout = 60 * time.Second
 	}
 
 	if config.Image == "" {

@@ -47,7 +47,7 @@ type PubSubConfig struct {
 func PubSub(config PubSubConfig) (*PubSubInstance, error) {
 
 	if config.ProbeTimeout == 0 {
-		config.ProbeTimeout = 10 * time.Second
+		config.ProbeTimeout = 60 * time.Second
 	}
 
 	if config.Image == "" {

@@ -46,7 +46,7 @@ type DatastoreConfig struct {
 // Datastore will create a Datastore instance container
 func Datastore(config DatastoreConfig) (*DatastoreInstance, error) {
 	if config.ProbeTimeout == 0 {
-		config.ProbeTimeout = 10 * time.Second
+		config.ProbeTimeout = 60 * time.Second
 	}
 
 	if config.Image == "" {
