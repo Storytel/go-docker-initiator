@@ -32,13 +32,11 @@ workflows:
   All:
     jobs:
       - Build:
-          context: ci
           filters:
             tags:
               only: /^v.*/
 
       - Lint:
-          context: ci
           filters:
             tags:
               only: /^v.*/
